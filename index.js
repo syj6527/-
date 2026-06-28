@@ -1,4 +1,4 @@
-// ─── 🎤 Hot Mic v2.34.0 ───
+// ─── 🎤 Hot Mic v2.35.1 ───
 // 캐릭터 몰래 보는 감독판 코멘터리
 // RP에 개입하지 않음. 해설은 기억되지 않음. 단방향.
 
@@ -6,7 +6,7 @@ import { getContext, extension_settings } from '../../../extensions.js';
 import { event_types, eventSource, saveSettingsDebounced } from '../../../../script.js';
 
 const EXT_NAME = 'hot-mic';
-const HOTMIC_VERSION = '2.34.0';
+const HOTMIC_VERSION = '2.35.1';
 
 // ─── 기본 설정 ───
 const DEFAULT_SETTINGS = {
@@ -244,7 +244,7 @@ const MODE_GROUPS = {
 이거 잘렸는데요?!" 한타 끝나면 "GG"로 정리. 용어는 폭격하되 교전 전까진 흥분을 아껴두세요.`, labels: ["중계","LIVE","한타"] },
         ] },
         { key:'track', label:'육상', subs: [
-            { style: `【육상·기록 종목 st】(가이드 톤) 트랙·필드·수영 등 기록 종목 중계. 출발 직전의 정적 → 폭발적 스타트 → 기록 호명의 리듬. "레인에 선수들 자리합니다. 호흡을 고릅니다. / 출발!— / 치고 나갑니다! / 결승선—! / 기록… 나왔습니다!" 랩타임·기록·신기록·레인 용어. 0.01초를 다투는 긴장과 기록 발표의 무게.`, labels: ["트랙","기록","결승선"] },
+            { style: `【육상·기록 종목 st】 트랙·필드·수영 등 기록 종목 중계. **어휘는 레인·스타트·반응속도·랩타임·기록·신기록·결승선·바통·페이스.** 리듬: 출발 직전의 정적 → 출발 신호 → 질주·추월 → 결승선·기록 호명. "레인에 선수들 자리합니다. 호흡을 고릅니다. / 출발!— / 치고 나갑니다! / 결승선—! / 기록… 나왔습니다!" 0.01초를 다투는 긴장과 기록 발표의 무게. ※구기·야구 용어(방망이·스윙·방어율·골·홈런·득점) 금지 — 트랙·기록 어휘만.`, labels: ["트랙","기록","결승선"] },
         ] },
     ],
     variety: [
@@ -404,20 +404,15 @@ async function generateCommentary(charData, chatHistory, lastMessage, signal) {
 
 [톤 핵심 — 실제 중계의 완급 공식 (★가장 중요)]
 - **평온한 설명 70% → 긴장 상승 20% → 결정적 순간 폭발 10%.** 처음부터 소리치지 마세요. 대부분은 담담히 상황을 설명하다가, 딱 한 번 결정적 순간에만 볼륨이 500% 터집니다. 이 리듬을 지키는 게 전부입니다.
-- ① 차분한 셋업(긴 문장): 국면·상황을 담담히 깔아둡니다. "후반 43분입니다. 스코어는 1대1, 양 팀 모두 승점 3점이 절실한 상황입니다." / "9회말 2아웃. 주자는 2루와 3루. 공 하나에 모든 게 결정될 수 있습니다."
+- ① 차분한 셋업(긴 문장): 국면·상황을 담담히 깔아둡니다. (아래는 축구·야구 예시일 뿐 — **선택된 종목의 국면·어휘로 바꿔 쓰세요.**) "후반 43분입니다. 스코어는 1대1, 양 팀 모두 승점 3점이 절실한 상황입니다." / "9회말 2아웃. 주자는 2루와 3루. 공 하나에 모든 게 결정될 수 있습니다."
 - ② 액션 실황(짧게 끊어치기): 동작 하나당 한 줄, **줄을 바꿔가며** 점점 짧고 빠르게. 카메라가 동작을 따라가듯 한 호흡에 한 동작.
-  예: "올라갑니다!
-문전 혼전!
-헤더!
-막혔습니다!
-다시 흘러나온 공!
-중거리 슈팅!!!"
+  (예시는 종목마다 다릅니다 — **선택된 종목의 동작 용어**로 끊으세요. 축구면 "헤더! / 슈팅!", 농구면 "돌파! / 3점—!", 육상이면 "치고 나갑니다! / 결승선—!", 미식축구면 "스냅— / 던집니다! / 퍼스트 다운!".)
 - ③ 폭발(딱 한 번): 가장 결정적인 순간에만 모음을 늘려 터뜨립니다. "들어갔습니다아아아아!!!", "추월 성공!", "끝내기 안타!", "경기 종료!!!". 남발하면 김 빠집니다 — 경기당 단 한 방.
 - ④ 차분한 착지(긴 문장): 터진 직후 다시 차분하게 의미를 부여합니다. "이 골 하나로 오늘 경기의 모든 이야기가 바뀝니다.", "시속 300km에서 저런 판단을 내린다는 것 자체가 놀랍습니다." — 사소한 진실은 바로 여기서 슬쩍 드러내면 데드팬으로 착지.
-- 스포츠 전문용어로 일상을 번역하되, 종목 어휘를 섞지 마세요(축구면 축구 용어만, 야구면 야구 용어만).
+- **선택된 종목의 어휘만** 쓰세요. 다른 종목 용어를 섞지 마세요 — 예: 육상·수영 중계에 야구 용어(방망이·스윙·방어율·홈런)나 구기 용어(골·헤더)를 끌어오면 안 됩니다. 구체 국면·용어는 아래 [세부 스타일]을 따르세요.
 - 해설위원이 끼어드는 2인 구성(캐스터=흥분 / 해설=차분한 팩트 한 줄)은 **선택지일 뿐 필수가 아닙니다.** 혼자 play-by-play로 끌고 가는 게 기본입니다.
 
-[구조 활용 — director 필드에 ①→②→③→④ 흐름을 줄바꿈으로 그대로]
+[구조 활용 — director 필드에 ①→②→③→④ 흐름을 줄바꿈으로 그대로] (아래는 축구 예시 — 선택된 종목에 맞게 바꿔 쓸 것)
 - 예: "후반 추가시간, 스코어는 그대로입니다. 마지막 공격이 시작됩니다.
 측면 열어주고요.
 크로스 올라갑니다.
@@ -681,6 +676,12 @@ async function generateCommentary(charData, chatHistory, lastMessage, signal) {
         if (g && g.subs.length) pool = g.subs;   // 선택 결의 세부 톤만
     }
     const chosen = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+    // 선택된 세부가 속한 결 key (per-결 CSS 스킨용). 선택 결이면 그대로, 🎲면 chosen이 속한 결을 역추적.
+    const chosenGroupKey = chosen
+        ? (settings.sub && settings.sub !== 'random'
+            ? settings.sub
+            : (groups.find(g => g.subs.includes(chosen))?.key || ''))
+        : '';
     const subStyle = chosen ? chosen.style : '';
     const subStyleNote = subStyle
         ? `\n\n[이번 해설의 세부 스타일 — 이 변주를 적용하세요]\n${subStyle}\n(위 모드의 큰 틀은 유지하되, 이 세부 스타일의 톤·어휘·연출로 변주하세요.)`
@@ -851,6 +852,7 @@ ${chatHistory}
 
     const parsed = JSON.parse(jsonStr);
     parsed._subLabel = subLabel; // 서브스타일 라벨 (preview 표시용)
+    parsed._subKey = chosenGroupKey; // 선택된 결 key (per-결 CSS 스킨용)
     return parsed;
 }
 
@@ -985,8 +987,10 @@ function renderCommentary(data) {
         ? blocks.join('')
         : '<div class="obs-empty">해설 없음</div>';
 
-    // 모드별 시각 스킨용 클래스 (CSS에서 .obs-skin-xxx로 분기)
-    body.className = 'obs-panel-body obs-skin-' + (getSettings().mode || 'docu');
+    // 모드별 + 결별 시각 스킨용 클래스 (CSS: .obs-skin-{mode}, .obs-sub-{결key})
+    const _mode2 = getSettings().mode || 'docu';
+    const _subKey = data._subKey || '';
+    body.className = 'obs-panel-body obs-skin-' + _mode2 + (_subKey ? ' obs-sub-' + _subKey : '');
 
     // 새 해설 렌더되면 맨 위로 (펼친 패널은 손가락으로 스크롤)
     body.scrollTop = 0;
@@ -2188,7 +2192,13 @@ function hotmicDebug(msg, isError) {
         const closeBtn = document.createElement('div');
         closeBtn.textContent = '✕ 닫기';
         closeBtn.style.cssText = 'color:#ff0;text-align:right;cursor:pointer;font-weight:bold;border-bottom:1px solid #0f0;padding-bottom:4px;margin-bottom:4px;';
-        closeBtn.addEventListener('click', () => banner.remove());
+        // 닫기 = 디버그 OFF (배너만 지우면 다음 로그에서 다시 생성되므로 플래그도 끈다)
+        closeBtn.addEventListener('click', () => {
+            HOTMIC_DEBUG = false;
+            banner.remove();
+            const ll = document.getElementById('hotmic-lang-label');
+            if (ll) ll.textContent = '출력 언어';
+        });
         banner.appendChild(closeBtn);
     }
     const line = document.createElement('div');
