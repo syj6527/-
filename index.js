@@ -1,4 +1,4 @@
-// ─── 🎤 Hot Mic v2.35.1 ───
+// ─── 🎤 Hot Mic v2.36.0 ───
 // 캐릭터 몰래 보는 감독판 코멘터리
 // RP에 개입하지 않음. 해설은 기억되지 않음. 단방향.
 
@@ -6,7 +6,7 @@ import { getContext, extension_settings } from '../../../extensions.js';
 import { event_types, eventSource, saveSettingsDebounced } from '../../../../script.js';
 
 const EXT_NAME = 'hot-mic';
-const HOTMIC_VERSION = '2.35.1';
+const HOTMIC_VERSION = '2.36.0';
 
 // ─── 기본 설정 ───
 const DEFAULT_SETTINGS = {
@@ -1275,8 +1275,18 @@ function injectUI() {
             <div class="obs-opacity-knob"></div>
         </div>
         <div class="obs-panel-header">
-            <span class="obs-panel-title">🎤 HOT MIC</span>
-            <div class="obs-panel-controls">
+            <div class="obs-header-row obs-header-row1">
+                <span class="obs-panel-title">🎤 HOT MIC</span>
+                <div class="obs-header-actions">
+                    <button class="obs-btn-small obs-regen" title="재생성">↺</button>
+                    <button class="obs-btn-small obs-bookmark" title="특전 수록 (이 코멘터리 저장)">★</button>
+                    <button class="obs-btn-small obs-archive" title="특전 수록함 열기">💿</button>
+                    <button class="obs-btn-small obs-fullscreen" title="전체 펼치기">⛶</button>
+                    <button class="obs-btn-small obs-collapse" title="접기">▼</button>
+                    <button class="obs-btn-small obs-minimize" title="최소화">✕</button>
+                </div>
+            </div>
+            <div class="obs-header-row obs-header-row2">
                 <select class="obs-select obs-mode-select" title="나레이션 모드">
                     <option value="docu"   ${settings.mode === 'docu'    ? 'selected' : ''}>🎬 다큐</option>
                     <option value="sports" ${settings.mode === 'sports'  ? 'selected' : ''}>🏟️ 중계</option>
@@ -1308,12 +1318,9 @@ function injectUI() {
                     <option value="blue"      ${settings.theme === 'blue'      ? 'selected' : ''}>🌊</option>
                     <option value="dark"      ${settings.theme === 'dark'      ? 'selected' : ''}>⚫</option>
                 </select>
-                <button class="obs-btn-small obs-regen" title="재생성">↺</button>
-                <button class="obs-btn-small obs-bookmark" title="특전 수록 (이 코멘터리 저장)">★</button>
-                <button class="obs-btn-small obs-archive" title="특전 수록함 열기">💿</button>
-                <button class="obs-btn-small obs-fullscreen" title="전체 펼치기">⛶</button>
-                <button class="obs-btn-small obs-collapse" title="접기">▼</button>
-                <button class="obs-btn-small obs-minimize" title="최소화">✕</button>
+            </div>
+            <div class="obs-header-row obs-header-row3">
+                <span class="obs-header-crumb"></span>
             </div>
         </div>
         <div class="obs-panel-body">
@@ -1908,6 +1915,16 @@ function syncControls() {
     set('#hotmic-context', s.context);
     set('.obs-mode-select', s.mode);
     rebuildSubSelect();           // 결 드롭다운을 모드에 맞게 재생성 + 선택값 반영
+    // 3단 헤더 breadcrumb: "모드 › 결"
+    const crumb = document.querySelector('.obs-header-crumb');
+    if (crumb) {
+        const modeLabel = MODE_LABELS[s.mode] || s.mode;
+        let subLabel = '🎲 랜덤';
+        if (s.sub && s.sub !== 'random') {
+            subLabel = (MODE_GROUPS[s.mode] || []).find(g => g.key === s.sub)?.label || s.sub;
+        }
+        crumb.textContent = `${modeLabel}  ›  ${subLabel}`;
+    }
     set('.obs-context-select', s.context);
     set('.obs-theme-select', s.theme);
     set('#hotmic-language', s.language);

@@ -332,11 +332,31 @@
 
 .obs-panel-header {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+    padding: 9px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
     flex-shrink: 0;
+}
+/* 1단: 로고 + 액션 아이콘 / 2단: 드롭다운 / 3단: 현재 결 */
+.obs-header-row { display: flex; align-items: center; gap: 6px; }
+.obs-header-row1 { justify-content: space-between; }
+.obs-header-actions { display: flex; align-items: center; gap: 4px; }
+.obs-header-row2 { flex-wrap: wrap; }
+.obs-header-row2 .obs-select { flex: 0 1 auto; min-width: 0; }
+.obs-header-row2 .obs-mode-select,
+.obs-header-row2 .obs-sub-select { flex: 1 1 auto; }
+.obs-header-row3 { min-height: 14px; }
+.obs-header-crumb {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--hm-text, #999);
+    opacity: 0.7;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .obs-panel-title {
@@ -345,7 +365,6 @@
     letter-spacing: 0.12em;
     color: #ff3c3c;
     font-family: 'Courier New', monospace;
-    flex: 1;
 }
 
 .obs-panel-controls {
@@ -601,13 +620,13 @@
     text-transform: uppercase;
 }
 
-/* 🗣️ 커뮤니티(트위터형) — director 위 프로필/핸들 줄, 아래 반응 아이콘 줄 */
-.obs-skin-community .type-director .obs-block-content {
+/* 🗣️ 커뮤니티(트위터형) — 커뮤니티 결에서만 (유튜브/블로그 제외) */
+.obs-skin-community.obs-sub-community .type-director .obs-block-content {
     position: relative;
     margin-top: 22px;
     margin-bottom: 20px;
 }
-.obs-skin-community .type-director .obs-block-content::before {
+.obs-skin-community.obs-sub-community .type-director .obs-block-content::before {
     content: '🎤  HOT MIC  ·  @hotmic_live  ·  방금';
     position: absolute;
     top: -20px;
@@ -618,7 +637,7 @@
     opacity: 0.85;
     white-space: nowrap;
 }
-.obs-skin-community .type-director .obs-block-content::after {
+.obs-skin-community.obs-sub-community .type-director .obs-block-content::after {
     content: '♡   ⟲   ↗   🔖';
     position: absolute;
     bottom: -18px;
@@ -850,4 +869,56 @@
     border-left: 3px solid var(--hm-line, rgba(128,128,128,0.35));
     padding-left: 10px;
     background: var(--hm-soft, rgba(128,128,128,0.05)) !important;
+}
+
+/* ─────────────────────────────────────────────
+   per-결 스킨 (모드 안에서 결마다 다른 룩) — body에 .obs-sub-{key} 부여됨
+   ───────────────────────────────────────────── */
+/* 🌐 유튜브 — 레트로 플레이어: 검은 영상바 + 빨간 진행선 + 컨트롤 */
+.obs-skin-community.obs-sub-youtube .type-director .obs-block-content {
+    position: relative;
+    margin-top: 80px;
+    padding-top: 6px;
+}
+.obs-skin-community.obs-sub-youtube .type-director .obs-block-content::before {
+    content: '▶';
+    position: absolute;
+    top: -74px; left: 0; right: 0;
+    height: 58px;
+    background: #0f0f0f;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 3px solid #ff0000;
+    color: rgba(255,255,255,0.9);
+    font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+}
+.obs-skin-community.obs-sub-youtube .type-director .obs-block-content::after {
+    content: '0:42 / 3:15      🔊  ⚙  ⛶';
+    position: absolute;
+    top: -13px; left: 6px;
+    font-size: 8.5px;
+    color: var(--hm-text, #888);
+    letter-spacing: 0.06em;
+    opacity: 0.8;
+}
+/* 🌐 블로그 — 좌측 포스팅 보더 + 상단 라벨 */
+.obs-skin-community.obs-sub-blog .type-director .obs-block-content {
+    border-left: 3px solid var(--hm-accent, #2db400);
+    padding-left: 10px;
+    background: var(--hm-soft, rgba(45,180,0,0.05)) !important;
+}
+/* 📚 도감 — 분류표 느낌: 모노스페이스 + 라벨 강조 */
+.obs-skin-wiki.obs-sub-fielddex .obs-block-content {
+    font-family: 'Courier New', monospace !important;
+    font-size: 12.5px; line-height: 1.7;
+}
+/* 📚 연표·연감 — 시간 나열 느낌: 모노스페이스 + 좁은 행간 */
+.obs-skin-wiki.obs-sub-chronicle .obs-block-content {
+    font-family: 'Courier New', monospace !important;
+    line-height: 1.5;
+}
+/* 🎮 설정집 — 아트북 카드 느낌: 좌측 보더 */
+.obs-skin-guide.obs-sub-codex .type-director .obs-block-content {
+    border-left: 3px solid var(--hm-accent, #888);
+    padding-left: 10px;
 }
