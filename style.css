@@ -1,0 +1,820 @@
+/* ─── 🎤 Hot Mic ─── */
+
+#observer-bar {
+    position: fixed;
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    z-index: 10050;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    padding: 0 12px;
+    transition: bottom 0.25s ease, padding 0.25s ease;
+}
+
+/* 모바일: 입력 폼이 더 높고 키보드 영향 있음 → 더 위로 */
+@media (max-width: 1000px) {
+    #observer-bar {
+        bottom: calc(54px + env(safe-area-inset-bottom, 0px));
+        z-index: 10050;
+        position: fixed;
+    }
+    #observer-bar.state-icon {
+        bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+    }
+    #observer-panel {
+        max-height: 45vh;
+    }
+    /* 패널 펼침 상태는 하단 시스템 바(제스처 바) 위로 더 띄운다 */
+    #observer-bar.state-panel {
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    }
+    #observer-ticker {
+        max-width: 100%;
+        background: rgba(8, 8, 8, 0.96);
+        border-color: rgba(255, 60, 60, 0.45);
+    }
+}
+
+/* ─── ICON ONLY ─── */
+#observer-bar.state-icon {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    justify-content: flex-end;
+    padding-right: 16px;
+}
+
+#observer-bar.state-icon #observer-icon-btn {
+    display: flex;
+}
+
+#observer-bar.state-icon #observer-ticker,
+#observer-bar.state-icon #observer-panel {
+    display: none;
+}
+
+/* ─── TICKER ─── */
+#observer-bar.state-ticker #observer-icon-btn {
+    display: none;
+}
+
+#observer-bar.state-ticker #observer-panel {
+    display: none;
+}
+
+#observer-bar.state-panel #observer-icon-btn {
+    display: none;
+}
+
+#observer-bar.state-panel #observer-ticker {
+    display: none;
+}
+
+/* ─── ICON BUTTON ─── */
+#observer-icon-btn {
+    display: none;
+    pointer-events: all;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(15, 15, 15, 0.88);
+    border: 1.5px solid rgba(255, 60, 60, 0.4);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+    touch-action: none;
+}
+
+#observer-icon-btn:hover {
+    border-color: rgba(255, 60, 60, 0.8);
+    transform: scale(1.05);
+}
+
+#observer-icon-btn .obs-rec-dot {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff3c3c;
+    animation: obs-blink 1.4s ease-in-out infinite;
+}
+
+#observer-icon-btn .obs-icon-recdot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ff3c3c;
+    box-shadow: 0 0 8px rgba(255, 60, 60, 0.9);
+    animation: obs-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes obs-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+/* ─── TICKER BAR ─── */
+#observer-ticker {
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(10, 10, 10, 0.9);
+    border: 1px solid rgba(255, 60, 60, 0.25);
+    border-radius: 8px;
+    padding: 6px 12px 6px 10px;
+    max-width: 600px;
+    width: 100%;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.6);
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+#observer-ticker:hover {
+    border-color: rgba(255, 60, 60, 0.5);
+}
+
+.obs-ticker-recdot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ff3c3c;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(255, 60, 60, 0.8);
+    animation: obs-blink 1.2s ease-in-out infinite;
+}
+
+.obs-ticker-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #ff3c3c;
+    background: rgba(255, 60, 60, 0.12);
+    border: 1px solid rgba(255, 60, 60, 0.3);
+    border-radius: 3px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+}
+
+.obs-ticker-preview {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.95);
+    overflow: hidden;
+    flex: 1;
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    position: relative;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* 흐르는 상태일 때만 양옆 페이드 마스크 */
+.obs-ticker-preview.is-flowing {
+    text-overflow: clip;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+}
+
+.obs-marquee-inner {
+    display: inline-block;
+    white-space: nowrap;
+    will-change: transform;
+}
+
+/* 텍스트가 길 때만 우→좌 흐름 */
+.obs-marquee-inner.obs-marquee-run {
+    animation: obs-marquee linear infinite;
+}
+
+/* 터치로 일시정지 */
+.obs-marquee-inner.obs-marquee-paused {
+    animation-play-state: paused !important;
+}
+
+@keyframes obs-marquee {
+    0%   { transform: translateX(var(--obs-marquee-start, 100%)); }
+    100% { transform: translateX(var(--obs-marquee-dist, -100%)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .obs-marquee-inner.obs-marquee-run { animation: none; }
+}
+
+.obs-ticker-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.obs-btn-small {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+}
+
+.obs-btn-small:hover {
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.08);
+}
+
+.obs-btn-small.obs-regen {
+    font-size: 12px;
+}
+
+.obs-btn-small.obs-regen.loading {
+    animation: obs-spin 0.8s linear infinite;
+}
+
+@keyframes obs-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ─── FULL PANEL ─── */
+#observer-panel {
+    pointer-events: all;
+    background: rgba(10, 10, 10, 0.94);
+    border: 1px solid rgba(255, 60, 60, 0.2);
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: max-width 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* 패널 상단 투명도 슬라이더 (얇은 선 + 흰 핸들) */
+.obs-opacity-track {
+    position: relative;
+    height: 18px;
+    flex-shrink: 0;
+    cursor: ew-resize;
+    touch-action: none;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: var(--hm-bg, rgb(34,34,38));
+    border-radius: 12px 12px 0 0;
+}
+/* 얇은 베이스 선 — 투명도 영향 안 받게 항상 또렷 */
+.obs-opacity-track::after {
+    content: '';
+    position: absolute;
+    left: 12px; right: 12px;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.35);
+    border-radius: 1px;
+    z-index: 1;
+}
+/* 채워진 선 */
+.obs-opacity-fill {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    height: 1px;
+    width: 92%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.55);
+    border-radius: 1px;
+    z-index: 2;
+}
+/* 흰 동그라미 핸들 — 항상 또렷 */
+.obs-opacity-knob {
+    position: absolute;
+    top: 50%;
+    left: 92%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* 전체 펼치기 */
+#observer-bar.obs-fs-bar.state-panel {
+    bottom: 0;
+    top: 0;
+    align-items: center;
+    padding: 24px 12px;
+}
+
+#observer-panel.obs-fs {
+    max-height: 88vh;
+    max-width: 860px;
+}
+
+#observer-panel.obs-fs .obs-panel-body {
+    font-size: 14px;
+}
+
+.obs-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    flex-shrink: 0;
+}
+
+.obs-panel-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #ff3c3c;
+    font-family: 'Courier New', monospace;
+    flex: 1;
+}
+
+.obs-panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* mode/context selects */
+.obs-select {
+    background: #1a1a1a !important;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 5px;
+    color: #fff !important;
+    font-size: 10px;
+    padding: 3px 6px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.obs-select:hover, .obs-select:focus {
+    border-color: rgba(255, 60, 60, 0.6);
+    color: #fff !important;
+}
+
+.obs-select option {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.obs-panel-body {
+    overflow-y: auto;
+    padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    flex: 1;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,60,60,0.3) transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.obs-panel-body::-webkit-scrollbar { width: 4px; }
+.obs-panel-body::-webkit-scrollbar-thumb {
+    background: rgba(255,60,60,0.3);
+    border-radius: 2px;
+}
+
+/* ─── COMMENTARY BLOCKS ─── */
+.obs-block {
+    margin-bottom: 14px;
+}
+
+.obs-block:last-child { margin-bottom: 0; }
+
+.obs-block-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: rgba(255,60,60,0.7);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.obs-block-content {
+    font-size: 13px;
+    color: rgba(255,255,255,0.96);
+    line-height: 1.6;
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    white-space: pre-wrap;
+}
+
+/* 속마음 — slightly warmer */
+.obs-block.type-inner .obs-block-label { color: rgba(255, 160, 60, 0.8); }
+.obs-block.type-inner .obs-block-content { color: rgba(255, 230, 200, 0.9); }
+
+/* 팩트체크 — clinical white */
+.obs-block.type-fact .obs-block-label { color: rgba(180, 220, 255, 0.8); }
+.obs-block.type-fact .obs-block-content { color: rgba(200, 230, 255, 0.9); }
+
+/* 인터뷰 — slightly indented */
+.obs-block.type-interview .obs-block-content {
+    border-left: 2px solid rgba(255,60,60,0.2);
+    padding-left: 10px;
+    font-style: normal;
+}
+
+/* ─── DIVIDER ─── */
+.obs-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,60,60,0.15), transparent);
+    margin: 10px 0;
+}
+
+/* ─── LOADING STATE ─── */
+.obs-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    padding: 8px 0;
+}
+
+.obs-loading-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.obs-loading-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,60,60,0.6);
+    animation: obs-pulse 1.2s ease-in-out infinite;
+}
+
+.obs-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.obs-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes obs-pulse {
+    0%, 100% { transform: scale(0.6); opacity: 0.3; }
+    50% { transform: scale(1); opacity: 1; }
+}
+
+/* ─── EMPTY ─── */
+.obs-empty {
+    color: rgba(255,255,255,0.2);
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    padding: 20px 0;
+}
+
+
+
+/* ─────────────────────────────────────────────
+   모드별 시각 스킨 (틀만 변형, 색은 테마 변수가 관장)
+   변수: --hm-accent --hm-text --hm-panel --hm-border --hm-soft --hm-line
+   ───────────────────────────────────────────── */
+
+/* 📚 위키 — 세리프 + 좌측 인용선 */
+.obs-skin-wiki .obs-block-content {
+    font-family: 'Georgia', 'Nanum Myeongjo', serif !important;
+    line-height: 1.7;
+    padding-left: 10px;
+    border-left: 2px solid var(--hm-line, rgba(128,128,128,0.3));
+}
+
+/* 📰 속보 — 신문 세리프 + 헤드라인 강조 + 워터마크 */
+.obs-skin-news .obs-block-content {
+    font-family: 'Georgia', 'Nanum Myeongjo', serif !important;
+    line-height: 1.65;
+}
+.obs-skin-news .type-director .obs-block-content {
+    font-weight: 700;
+    font-size: 14px;
+    border-top: 2px solid var(--hm-accent, #999);
+    border-bottom: 1px solid var(--hm-line, rgba(128,128,128,0.3));
+    padding: 8px 0;
+}
+.obs-skin-news .type-director .obs-block-content::after {
+    content: 'ⓒ HOT MIC NEWS';
+    display: block;
+    margin-top: 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    font-weight: 400;
+}
+
+/* 🛕 성전 — 가운데 정렬 + 이탤릭 세리프 + 넓은 행간 */
+.obs-skin-bible .obs-block-content {
+    font-family: 'Georgia', 'Nanum Myeongjo', serif !important;
+    text-align: center;
+    line-height: 1.9;
+    padding: 4px 14px;
+    font-style: italic;
+}
+.obs-skin-bible .obs-block-label { text-align: center; }
+
+/* 🗣️ 커뮤니티 — 말풍선 박스 */
+.obs-skin-community .obs-block-content {
+    background: var(--hm-soft, rgba(128,128,128,0.1)) !important;
+    border: 1px solid var(--hm-line, rgba(128,128,128,0.25));
+    border-radius: 14px;
+    padding: 10px 13px;
+    line-height: 1.6;
+}
+
+/* ⚖️ 법정수사 — 모노 + 좌측 이중선 (서류) */
+.obs-skin-court .type-director .obs-block-content {
+    font-family: 'Courier New', monospace !important;
+    border-left: 3px double var(--hm-line, rgba(128,128,128,0.4));
+    padding-left: 10px;
+    font-size: 12.5px;
+}
+
+/* 🎮 공략집 — 점선 카드 박스 */
+.obs-skin-guide .type-director .obs-block-content {
+    background: var(--hm-soft, rgba(128,128,128,0.08)) !important;
+    border: 1px dashed var(--hm-line, rgba(128,128,128,0.4));
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Courier New', monospace !important;
+    font-size: 12.5px;
+}
+
+/* 🗂️ 기밀문서 — 모노 보고서 + 상단 경고선 */
+.obs-skin-scp .obs-block-content {
+    font-family: 'Courier New', monospace !important;
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+.obs-skin-scp .type-director .obs-block-content {
+    border: 1px solid var(--hm-line, rgba(128,128,128,0.4));
+    border-top: 3px solid var(--hm-accent, #b48c00);
+    padding: 10px 12px;
+    background: var(--hm-soft, rgba(128,128,128,0.06)) !important;
+}
+
+/* 🎬 다큐 — 세리프 + 넉넉한 행간 (내레이션) */
+.obs-skin-docu .type-director .obs-block-content {
+    font-family: 'Georgia', 'Nanum Myeongjo', serif !important;
+    line-height: 1.8;
+    font-style: italic;
+}
+/* ─────────────────────────────────────────────
+   레이아웃 흉내 — HTML 구조는 그대로, CSS 장식만 (회귀 위험 없음)
+   director 블록에 매체별 메타줄을 ::before/::after로 얹는다
+   ───────────────────────────────────────────── */
+
+/* 📰 속보 — 헤드라인 위 신문 마스트헤드 */
+.obs-skin-news .type-director { position: relative; }
+.obs-skin-news .type-director .obs-block-label {
+    display: none; /* 라벨 숨기고 마스트헤드로 대체 */
+}
+.obs-skin-news .type-director::before {
+    content: 'HOT MIC NEWS  ·  단독 보도';
+    display: block;
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--hm-accent, #999);
+    border-bottom: 2px solid var(--hm-accent, #999);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+/* 🗣️ 커뮤니티(트위터형) — director 위 프로필/핸들 줄, 아래 반응 아이콘 줄 */
+.obs-skin-community .type-director .obs-block-content {
+    position: relative;
+    margin-top: 22px;
+    margin-bottom: 20px;
+}
+.obs-skin-community .type-director .obs-block-content::before {
+    content: '🎤  HOT MIC  ·  @hotmic_live  ·  방금';
+    position: absolute;
+    top: -20px;
+    left: 2px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--hm-text, #888);
+    opacity: 0.85;
+    white-space: nowrap;
+}
+.obs-skin-community .type-director .obs-block-content::after {
+    content: '♡   ⟲   ↗   🔖';
+    position: absolute;
+    bottom: -18px;
+    left: 2px;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    opacity: 0.55;
+}
+
+/* 🎮 공략집 — 카드 상단 'QUEST' 태그 */
+.obs-skin-guide .type-director { position: relative; }
+.obs-skin-guide .type-director .obs-block-content::before {
+    content: '▸ EVENT';
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--hm-accent, #999);
+    margin-bottom: 6px;
+}
+
+/* 🗂️ 기밀문서 — 문서 상단 분류 도장 */
+.obs-skin-scp .type-director .obs-block-content::before {
+    content: '⚠ CLASSIFIED — 기밀 등급 문서';
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--hm-accent, #b48c00);
+    margin-bottom: 8px;
+    opacity: 0.85;
+}
+
+/* ─── 특전 수록 (북마크) — 패널 본문 페이지 ─── */
+.obs-btn-small.obs-btn-flash {
+    color: var(--hm-accent, #C84C4C) !important;
+    transform: scale(1.3);
+    transition: transform 0.15s;
+}
+
+/* 보관함 모드: 본문 패딩 제거 → sticky 제목 위 틈 없앰(스크롤 시 비침 방지). 패딩은 헤더·리스트가 자체 보유 */
+.obs-panel-body.hma-active { padding: 0; }
+
+/* 보관함 헤더 (패널 본문 상단 고정, 불투명) */
+.obs-panel-body .hma-head {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    margin: 0 0 4px;
+    background: var(--hm-panel, #232323);
+    border-bottom: 1px solid var(--hm-line, rgba(255,255,255,0.18));
+    box-shadow: 0 3px 8px -3px rgba(0,0,0,0.3);
+}
+.obs-panel-body .hma-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--hm-accent, #C84C4C);
+    letter-spacing: 0.3px;
+}
+.obs-panel-body .hma-back,
+.obs-panel-body .hma-clear {
+    flex: 0 0 auto;
+    background: none;
+    border: 1px solid var(--hm-line, rgba(255,255,255,0.18));
+    color: var(--hm-text, #EAEAEA);
+    opacity: 0.8;
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 7px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.obs-panel-body .hma-back:hover,
+.obs-panel-body .hma-clear:hover {
+    opacity: 1;
+    border-color: var(--hm-accent, #C84C4C);
+    color: var(--hm-accent, #C84C4C);
+}
+
+.obs-panel-body .hma-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 14px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+.obs-panel-body .hma-empty {
+    text-align: center;
+    opacity: 0.55;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 22px 12px;
+    color: var(--hm-text, #EAEAEA);
+}
+.obs-panel-body .hma-card {
+    background: var(--hm-soft, rgba(255,255,255,0.07));
+    border: 1px solid var(--hm-line, rgba(255,255,255,0.15));
+    border-radius: 10px;
+    padding: 9px 11px;
+}
+.obs-panel-body .hma-card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.obs-panel-body .hma-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--hm-accent, #C84C4C);
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.obs-panel-body .hma-time { font-size: 10px; opacity: 0.5; flex: 0 0 auto; color: var(--hm-text, #EAEAEA); }
+.obs-panel-body .hma-card-btns { display: flex; gap: 3px; flex: 0 0 auto; align-items: center; }
+.obs-panel-body .hma-toggle {
+    background: none;
+    border: 1px solid var(--hm-line, rgba(255,255,255,0.15));
+    color: var(--hm-text, #EAEAEA);
+    opacity: 0.7;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+.obs-panel-body .hma-toggle:hover { opacity: 1; border-color: var(--hm-accent, #C84C4C); color: var(--hm-accent, #C84C4C); }
+.obs-panel-body .hma-copy,
+.obs-panel-body .hma-del {
+    background: none;
+    border: none;
+    color: var(--hm-text, #EAEAEA);
+    opacity: 0.55;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 2px 3px;
+    border-radius: 5px;
+    line-height: 1;
+}
+.obs-panel-body .hma-copy:hover { opacity: 1; background: var(--hm-line, rgba(255,255,255,0.15)); }
+.obs-panel-body .hma-del:hover { opacity: 1; background: rgba(200,76,76,0.25); }
+
+.obs-panel-body .hma-preview {
+    font-size: 12.5px;
+    line-height: 1.5;
+    opacity: 0.8;
+    color: var(--hm-text, #EAEAEA);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+.obs-panel-body .hma-card.expanded .hma-preview { display: none; }
+.obs-panel-body .hma-card-body { display: none; flex-direction: column; gap: 6px; margin-top: 4px; }
+.obs-panel-body .hma-card.expanded .hma-card-body { display: flex; }
+.obs-panel-body .hma-blk {
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--hm-text, #EAEAEA);
+}
+.obs-panel-body .hma-blk-lbl {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--hm-accent, #C84C4C);
+    opacity: 0.85;
+    margin-right: 6px;
+    vertical-align: 1px;
+}
+
+/* 토스트 */
+#hotmic-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 64px;
+    transform: translateX(-50%) translateY(12px);
+    z-index: 10120;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+}
+#hotmic-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
