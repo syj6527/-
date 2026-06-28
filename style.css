@@ -818,3 +818,36 @@
     transition: opacity 0.2s, transform 0.2s;
 }
 #hotmic-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─────────────────────────────────────────────
+   📻 라디오 — 온에어 배지 + 신청곡 ♪ + 청취자 문자 메신저풍
+   (HTML 구조는 그대로, CSS 장식만. 모드 key='radio')
+   ───────────────────────────────────────────── */
+.obs-skin-radio .type-director { position: relative; }
+.obs-skin-radio .type-director .obs-block-label { display: none; } /* [온에어] 라벨 → 배지로 대체 */
+.obs-skin-radio .type-director::before {
+    content: '● ON AIR';
+    display: block;
+    width: fit-content;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: #fff;
+    background: var(--hm-accent, #b03a3a);
+    padding: 2px 9px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+.obs-skin-radio .type-fact .obs-block-content::before {
+    content: '♪ ';
+    color: var(--hm-accent, #b03a3a);
+    font-weight: 700;
+}
+.obs-skin-radio .type-interview .obs-block-content {
+    font-size: 12.5px;
+    line-height: 1.7;
+    border-left: 3px solid var(--hm-line, rgba(128,128,128,0.35));
+    padding-left: 10px;
+    background: var(--hm-soft, rgba(128,128,128,0.05)) !important;
+}
