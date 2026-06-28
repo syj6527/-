@@ -347,17 +347,6 @@
 .obs-header-row2 .obs-select { flex: 0 1 auto; min-width: 0; }
 .obs-header-row2 .obs-mode-select,
 .obs-header-row2 .obs-sub-select { flex: 1 1 auto; }
-.obs-header-row3 { min-height: 14px; }
-.obs-header-crumb {
-    font-size: 10px;
-    letter-spacing: 0.04em;
-    color: var(--hm-text, #999);
-    opacity: 0.7;
-    font-family: 'Courier New', monospace;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 .obs-panel-title {
     font-size: 11px;
@@ -874,20 +863,27 @@
 /* ─────────────────────────────────────────────
    per-결 스킨 (모드 안에서 결마다 다른 룩) — body에 .obs-sub-{key} 부여됨
    ───────────────────────────────────────────── */
-/* 🌐 유튜브 — 레트로 플레이어: 검은 영상박스(일반 흐름이라 라벨과 안 겹침) + 빨간 진행선 */
-.obs-skin-community.obs-sub-youtube .type-director .obs-block-content::before {
-    content: '▶';
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 64px;
-    margin-bottom: 12px;
+/* 🌐 유튜브 — HTML 플레이어 바(director 앞 삽입) + 파란 타임스탬프 */
+.obs-yt-player { margin-bottom: 12px; }
+.obs-yt-screen {
+    height: 84px;
     background: #0f0f0f;
-    border-radius: 8px;
-    border-bottom: 3px solid #ff0000;
-    color: rgba(255,255,255,0.85);
-    font-size: 24px;
+    border-radius: 8px 8px 0 0;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.9); font-size: 26px;
 }
+.obs-yt-progress { height: 3px; background: rgba(255,0,0,0.25); position: relative; }
+.obs-yt-progress > span {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 24%; background: #ff0000;
+}
+.obs-yt-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #0f0f0f; border-radius: 0 0 8px 8px;
+    padding: 4px 9px;
+    font-size: 9.5px; color: rgba(255,255,255,0.7); letter-spacing: 0.04em;
+}
+.obs-yt-glyphs { letter-spacing: 0.2em; }
+.obs-yt-ts { color: #3ea6ff; }  /* 유튜브 댓글 시간 링크 느낌 */
 /* 🌐 블로그 — 좌측 포스팅 보더 + 상단 라벨 */
 .obs-skin-community.obs-sub-blog .type-director .obs-block-content {
     border-left: 3px solid var(--hm-accent, #2db400);
