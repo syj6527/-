@@ -874,32 +874,19 @@
 /* ─────────────────────────────────────────────
    per-결 스킨 (모드 안에서 결마다 다른 룩) — body에 .obs-sub-{key} 부여됨
    ───────────────────────────────────────────── */
-/* 🌐 유튜브 — 레트로 플레이어: 검은 영상바 + 빨간 진행선 + 컨트롤 */
-.obs-skin-community.obs-sub-youtube .type-director .obs-block-content {
-    position: relative;
-    margin-top: 80px;
-    padding-top: 6px;
-}
+/* 🌐 유튜브 — 레트로 플레이어: 검은 영상박스(일반 흐름이라 라벨과 안 겹침) + 빨간 진행선 */
 .obs-skin-community.obs-sub-youtube .type-director .obs-block-content::before {
     content: '▶';
-    position: absolute;
-    top: -74px; left: 0; right: 0;
-    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    margin-bottom: 12px;
     background: #0f0f0f;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px;
     border-bottom: 3px solid #ff0000;
-    color: rgba(255,255,255,0.9);
-    font-size: 22px;
-    display: flex; align-items: center; justify-content: center;
-}
-.obs-skin-community.obs-sub-youtube .type-director .obs-block-content::after {
-    content: '0:42 / 3:15      🔊  ⚙  ⛶';
-    position: absolute;
-    top: -13px; left: 6px;
-    font-size: 8.5px;
-    color: var(--hm-text, #888);
-    letter-spacing: 0.06em;
-    opacity: 0.8;
+    color: rgba(255,255,255,0.85);
+    font-size: 24px;
 }
 /* 🌐 블로그 — 좌측 포스팅 보더 + 상단 라벨 */
 .obs-skin-community.obs-sub-blog .type-director .obs-block-content {
